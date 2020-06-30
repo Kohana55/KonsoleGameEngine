@@ -1,79 +1,104 @@
-﻿using System;
+﻿using KonsoleGameEngine;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using KonsoleGameEngine;
 
 namespace MyGame
 {
     class Dog : GameEntity
     {
-        public override Cell[] Model { get; } = { new Cell(0,0,"O") };
-
-        // Control fields for being called by the Player
+        /// <summary>
+        /// A little bit more complicated than the Player
+        /// The Dog contains a few elements, the first and obvious is a Cell.
+        /// Then a reference to the player who owns us, but isn't "needed" for the 
+        /// dog to exist.
+        /// And an A* pathfinder along with a _path to hold our path
+        /// </summary>
+        public Cell Model = new Cell(0, 0, "O");
         private Player _player;
-        public bool Called { get; set; }
+        private AStarPathfinder _pathFinder;
         private List<PathNode> _path = new List<PathNode>();
-        private Cell destinationCell;
 
-        public Dog(int x, int y)
-        {
-            Model[0].X += x;
-            Model[0].Y += y;
-        }
-
+        /// <summary>
+        /// As player summary...
+        /// </summary>
+        /// <returns></returns>
         public override List<Cell> GetCells()
         {
-            return new List<Cell> { Model[0] };
+            return new List<Cell> { Model };
         }
 
+        /// <summary>
+        /// In this override notice the setting up of the pathfinder.
+        /// This isn't done during construction of our object because our
+        /// local _gameWorld from our baseclass is null; it wont be set until this 
+        /// entity is registered with the game world. 
+        /// 
+        /// Once registered, this function will be called when GameWorld calls Start()
+        /// Allowing us to finalise any object setup we need that relies on _gameWorld
+        /// </summary>
         public override void Start()
         {
+            _pathFinder = new AStarPathfinder(_gameWorld);
+
             Thread doggyUpdateThread = new Thread(Update);
-            doggyUpdateThread.Start();
+            doggyUpdateThread.Start();           
         }
 
+        /// <summary>
+        /// Sets up a path when called
+        /// </summary>
+        /// <param name="dest"></param>
         public void CallDog(Cell dest)
         {
-            destinationCell = dest;
-            _path = _gameWorld.GetPath(Model[0], dest);
+            _path = _pathFinder.CalculatePath(Model, dest);
         }
 
+        /// <summary>
+        /// The Player has a Controller thread, which seems like a fitting name.
+        /// This is essentially our Dogs 'Controller', Update seemed like a better name.
+        /// 
+        /// Notice this is kicked off during the Start(), right after we
+        /// setup our pathfinder
+        /// </summary>
         private void Update()
         {
-            int counter = 0;
             while(true)
             {
                 if (_path.Count>0)
                     FollowPath();
-                else
-                {
-                    if (counter > 10) { IdleMovement(); counter = 0; }
-                }
 
                 Thread.Sleep(100);
-                counter++;
             }
         }
 
+        /// <summary>
+        /// Moves the Dog's Model to the next Cell on its path
+        /// 
+        /// The path is ordered, so we're using the first element of 
+        /// the path, then deleting it. 
+        /// 
+        /// It would be better practice to check if the _path is empty here
+        /// rather than in the Update function. But this is YOUR code, you fix it! :)
+        /// </summary>
         private void FollowPath()
         {
-            Model[0].X = _path[0].X;
-            Model[0].Y = _path[0].Y;
+            Model.X = _path[0].X;
+            Model.Y = _path[0].Y;
             _path.RemoveAt(0);
         }
 
-        // Move to Random Walkable spot
-        private void IdleMovement()
-        {
-
-        }
-
-        internal void RegisterOwner(Player player)
+        /// <summary>
+        /// Register the "owner" of this Dog...
+        /// 
+        /// ...and steal his position and sit right next to him!
+        /// *Good Boy*
+        /// </summary>
+        /// <param name="player"></param>
+        public void RegisterOwner(Player player)
         {
             _player = player;
+            Model.X = _player.Model.X + 1;
+            Model.Y = _player.Model.Y;
         }
     }
 }

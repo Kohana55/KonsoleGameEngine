@@ -9,8 +9,7 @@ namespace KonsoleGameEngine
         public int Y = 20;
 
         private Cell[,] _board;
-        private AStarPathfinder _pathFinder;
-        private List<GameEntity> _enetities = new List<GameEntity>();
+        private List<GameEntity> _entities = new List<GameEntity>();
         #endregion
 
         #region Ctors
@@ -20,7 +19,6 @@ namespace KonsoleGameEngine
         public GameWorld()
         {
             _board = new Cell[X, Y];
-            _pathFinder = new AStarPathfinder(this);
             InitiateGameBoard();
         }
 
@@ -31,7 +29,6 @@ namespace KonsoleGameEngine
         {
             X = x; y = Y;
             _board = new Cell[X, Y];
-            _pathFinder = new AStarPathfinder(this);
             InitiateGameBoard();
         }
         #endregion
@@ -42,7 +39,7 @@ namespace KonsoleGameEngine
         /// </summary>
         public void Start()
         {
-            foreach(GameEntity entity in _enetities)
+            foreach(GameEntity entity in _entities)
             {
                 entity.Start();
             }
@@ -54,7 +51,7 @@ namespace KonsoleGameEngine
         public void Update()
         {
             InitiateGameBoard();
-            foreach (GameEntity entity in _enetities)
+            foreach (GameEntity entity in _entities)
             {
                 foreach(Cell cell in entity.GetCells())
                 {
@@ -70,18 +67,7 @@ namespace KonsoleGameEngine
         public void RegisterEntity(GameEntity entity)
         {
             entity._gameWorld = this;
-            _enetities.Add(entity);
-        }
-
-        /// <summary>
-        /// Returns shortest path between two Cells
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="dest"></param>
-        /// <returns></returns>
-        public List<PathNode> GetPath(Cell start, Cell dest)
-        {
-            return _pathFinder.CalculatePath(start, dest);
+            _entities.Add(entity);
         }
 
         #region CellControls

@@ -30,7 +30,7 @@ namespace MyGame
             
             // Custom Entity written by "you"
             var player = new Player();
-            var dog = new Dog(player.Model[0].X+2, player.Model[0].Y+1);
+            var dog = new Dog();
             player.RegisterDog(dog);
 
             // Register your custom Entity

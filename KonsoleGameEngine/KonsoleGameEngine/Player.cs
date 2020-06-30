@@ -1,7 +1,7 @@
-﻿using System;
+﻿using KonsoleGameEngine;
+using System;
 using System.Collections.Generic;
 using System.Threading;
-using KonsoleGameEngine;
 
 namespace MyGame
 {
@@ -20,7 +20,7 @@ namespace MyGame
         /// 
         /// The Model can be singular or many Cells
         /// </summary>
-        public override Cell[] Model { get; } = { new Cell(0, 0, "x") { IsWalkable = true } };
+        public Cell Model = new Cell(0, 0, "x");
 
         /// <summary>
         /// Reference to our Dog GameEntity
@@ -40,7 +40,7 @@ namespace MyGame
         /// <returns></returns>
         public override List<Cell> GetCells()
         {
-            return new List<Cell> { Model[0] };
+            return new List<Cell> { Model };
         }
 
         /// <summary>
@@ -56,6 +56,14 @@ namespace MyGame
             playerControllerThread.Start();
         }
 
+        /// <summary>
+        /// Register a Dog to the Player
+        /// Swap references to each other 
+        /// 
+        /// Notice that in the Controller code we can
+        /// then use our field _dog.CallDog() to call the dog
+        /// </summary>
+        /// <param name="dog"></param>
         public void RegisterDog(Dog dog)
         {
             _dog = dog;
@@ -84,39 +92,39 @@ namespace MyGame
                 // Update players new position after keypress
                 if (keypress.KeyChar == 'a')
                 {
-                    if (Model[0].X != 0)
+                    if (Model.X != 0)
                     {
-                        Model[0].X -= 1;
+                        Model.X -= 1;
                     }
                 }
 
                 if (keypress.KeyChar == 'd')
                 {
-                    if (Model[0].X != _gameWorld.X - 1)
+                    if (Model.X != _gameWorld.X - 1)
                     {
-                        Model[0].X += 1;
+                        Model.X += 1;
                     }
                 }
 
                 if (keypress.KeyChar == 'w')
                 {
-                    if (Model[0].Y != 0)
+                    if (Model.Y != 0)
                     {
-                        Model[0].Y -= 1;
+                        Model.Y -= 1;
                     }
                 }
 
                 if (keypress.KeyChar == 's')
                 {
-                    if (Model[0].Y != _gameWorld.Y - 1)
+                    if (Model.Y != _gameWorld.Y - 1)
                     {
-                        Model[0].Y += 1;
+                        Model.Y += 1;
                     }
                 }
 
                 if (keypress.KeyChar == ' ')
                 {
-                    _dog.CallDog(Model[0]);
+                    _dog.CallDog(Model);
                 }
             }
         }
