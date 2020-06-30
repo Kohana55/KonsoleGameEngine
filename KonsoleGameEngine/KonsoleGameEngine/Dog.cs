@@ -50,7 +50,7 @@ namespace MyGame
         /// <param name="dest"></param>
         public void CallDog(Cell dest)
         {
-            _path = _pathFinder.CalculatePath(Model, dest);
+            _path = _pathFinder.CalculatePath(Model, dest, true);
         }
 
         /// <summary>

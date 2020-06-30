@@ -31,7 +31,7 @@ namespace KonsoleGameEngine
         /// <param name="startLocation"></param>
         /// <param name="destination"></param>
         /// <returns>A* Path</returns>
-        public List<PathNode> CalculatePath(Cell startLocation, Cell destination)
+        public List<PathNode> CalculatePath(Cell startLocation, Cell destination, bool fourNeighbours = false)
         {
             // Reset Game World's pathfinding scores to default
             for (int i = 0; i < _game.X; i++)
@@ -65,7 +65,7 @@ namespace KonsoleGameEngine
                 openListP.Remove(currentNode);
                 closedListP.Add(currentNode);
 
-                List<PathNode> neighbours = FindNeighbours(currentNode);
+                List<PathNode> neighbours = FindNeighbours(currentNode, fourNeighbours);
                 foreach (PathNode neighbour in neighbours)
                 {
                     if (closedListP.Contains(neighbour))
@@ -145,7 +145,7 @@ namespace KonsoleGameEngine
         /// </summary>
         /// <param name="cell"></param>
         /// <returns>List of neighbours</returns>
-        private List<PathNode> FindNeighbours(PathNode node)
+        private List<PathNode> FindNeighbours(PathNode node, bool fourNeighbours = false)
         {
             List<PathNode> neighbours = new List<PathNode>();
 
@@ -165,6 +165,11 @@ namespace KonsoleGameEngine
                         continue;
                     if (_board[x + i, y + j].IsWalkable == false)
                         continue;
+                    if (fourNeighbours)
+                    {
+                        if (!(_board[x + i, y + j].X == x || _board[x + i, y + j].Y == y))
+                            continue;
+                    }
 
                     // Add Cell to neighbour list
                     neighbours.Add(_board[x + i, y + j]);
