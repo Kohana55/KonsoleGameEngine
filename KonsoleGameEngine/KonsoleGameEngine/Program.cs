@@ -32,10 +32,12 @@ namespace MyGame
             var player = new Player();
             var dog = new Dog();
             player.RegisterDog(dog);
+            var walls = new Terrain();
 
             // Register your custom Entity
             game.RegisterEntity(player);
             game.RegisterEntity(dog);
+            game.RegisterEntity(walls);
 
             // Standard Game Loop
             game.Start();
