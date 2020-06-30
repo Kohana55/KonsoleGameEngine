@@ -18,10 +18,14 @@ namespace MyGame
         /// <summary>
         /// The Model represents the Cell for this Entity
         /// 
-        /// The Model can be singular or an array/list and as such,
-        /// it is not included in the abstract class.
+        /// The Model can be singular or many Cells
         /// </summary>
-        private Cell Model = new Cell(0, 0, "x") { IsWalkable = false };
+        public override Cell[] Model { get; } = { new Cell(0, 0, "x") { IsWalkable = true } };
+
+        /// <summary>
+        /// Reference to our Dog GameEntity
+        /// </summary>
+        public Dog _dog;
 
         /// <summary>
         /// Our first override from the GameEntity abstract parent class
@@ -29,11 +33,14 @@ namespace MyGame
         /// can put them into the world. The GameWorld is also made up of Cells so
         /// as you can imagine, this is just giving the GameWorld a list of cells to 
         /// override on its grid of Cells.
+        /// 
+        /// Our Player only has 1 Cell which we know because we made him - so rather
+        /// than loop the Cells in Model adding to the List, just add the first element
         /// </summary>
         /// <returns></returns>
         public override List<Cell> GetCells()
         {
-            return new List<Cell> { Model };
+            return new List<Cell> { Model[0] };
         }
 
         /// <summary>
@@ -47,6 +54,12 @@ namespace MyGame
         {
             Thread playerControllerThread = new Thread(Controller);
             playerControllerThread.Start();
+        }
+
+        public void RegisterDog(Dog dog)
+        {
+            _dog = dog;
+            _dog.RegisterOwner(this);
         }
 
         /// <summary>
@@ -71,34 +84,39 @@ namespace MyGame
                 // Update players new position after keypress
                 if (keypress.KeyChar == 'a')
                 {
-                    if (Model.X != 0)
+                    if (Model[0].X != 0)
                     {
-                        Model.X -= 1;
+                        Model[0].X -= 1;
                     }
                 }
 
                 if (keypress.KeyChar == 'd')
                 {
-                    if (Model.X != _gameWorld.X - 1)
+                    if (Model[0].X != _gameWorld.X - 1)
                     {
-                        Model.X += 1;
+                        Model[0].X += 1;
                     }
                 }
 
                 if (keypress.KeyChar == 'w')
                 {
-                    if (Model.Y != 0)
+                    if (Model[0].Y != 0)
                     {
-                        Model.Y -= 1;
+                        Model[0].Y -= 1;
                     }
                 }
 
                 if (keypress.KeyChar == 's')
                 {
-                    if (Model.Y != _gameWorld.Y - 1)
+                    if (Model[0].Y != _gameWorld.Y - 1)
                     {
-                        Model.Y += 1;
+                        Model[0].Y += 1;
                     }
+                }
+
+                if (keypress.KeyChar == ' ')
+                {
+                    _dog.CallDog(Model[0]);
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace KonsoleGameEngine
         /// <summary>
         /// Cursor Model
         /// </summary>
-        private Cell Model = new Cell(0, 0, "x") { IsWalkable = false };
+        public override Cell[] Model { get; } = { new Cell(0, 0, "x") { IsWalkable = false } };
 
         /// <summary>
         /// Returns Cursor Cell
@@ -21,7 +21,7 @@ namespace KonsoleGameEngine
         /// <returns></returns>
         public override List<Cell> GetCells()
         {
-            return new List<Cell> { Model };
+            return new List<Cell> { Model[0] };
         }
 
         /// <summary>
@@ -48,20 +48,20 @@ namespace KonsoleGameEngine
 
                 keypress = Console.ReadKey(true);
 
-                if (keypress.KeyChar == 'a' && Model.X != 0)
-                    Model.X -= 1;
+                if (keypress.KeyChar == 'a' && Model[0].X != 0)
+                    Model[0].X -= 1;
 
-                if (keypress.KeyChar == 'd' && Model.X != _gameWorld.X - 1)
-                    Model.X += 1;
+                if (keypress.KeyChar == 'd' && Model[0].X != _gameWorld.X - 1)
+                    Model[0].X += 1;
 
-                if (keypress.KeyChar == 'w' && Model.Y != 0)
-                    Model.Y -= 1;
+                if (keypress.KeyChar == 'w' && Model[0].Y != 0)
+                    Model[0].Y -= 1;
 
-                if (keypress.KeyChar == 's' && Model.Y != _gameWorld.Y - 1)
-                        Model.Y += 1;
+                if (keypress.KeyChar == 's' && Model[0].Y != _gameWorld.Y - 1)
+                        Model[0].Y += 1;
 
                 if (keypress.KeyChar == ' ')
-                    currentCell = _gameWorld.GetCell(Model);
+                    currentCell = _gameWorld.GetCell(Model[0]);
             }
         }
     }

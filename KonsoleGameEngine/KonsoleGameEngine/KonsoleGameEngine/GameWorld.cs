@@ -73,6 +73,17 @@ namespace KonsoleGameEngine
             _enetities.Add(entity);
         }
 
+        /// <summary>
+        /// Returns shortest path between two Cells
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="dest"></param>
+        /// <returns></returns>
+        public List<PathNode> GetPath(Cell start, Cell dest)
+        {
+            return _pathFinder.CalculatePath(start, dest);
+        }
+
         #region CellControls
         /// <summary>
         /// Return contents of a cell
@@ -111,7 +122,7 @@ namespace KonsoleGameEngine
 
         #region Private 
         /// <summary>
-        /// Initiate a blank board of constructed Cells
+        /// Initiate a game board of constructed Cells
         /// </summary>
         private void InitiateGameBoard()
         {

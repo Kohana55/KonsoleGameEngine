@@ -9,6 +9,10 @@ namespace KonsoleGameEngine
         /// </summary>
         public GameWorld _gameWorld;
         /// <summary>
+        /// Model holds all Cells this Entity controls
+        /// </summary>
+        public abstract Cell[] Model { get; }
+        /// <summary>
         /// Return all the Cells this GameEntity is in control of
         /// </summary>
         /// <returns></returns>

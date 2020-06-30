@@ -6,9 +6,10 @@ namespace KonsoleGameEngine
     class AStarPathfinder
     {
         #region Fields
-        private List<Cell> openList;
-        private List<Cell> closedList;
         private GameWorld _game;
+        private List<PathNode> openListP;
+        private List<PathNode> closedListP;
+        private PathNode[,] _board;
         #endregion
 
         #region Ctors
@@ -19,6 +20,7 @@ namespace KonsoleGameEngine
         public AStarPathfinder(GameWorld gameWorld)
         {
             _game = gameWorld;
+            _board = new PathNode[gameWorld.X, gameWorld.Y];
         }
         #endregion
 
@@ -29,56 +31,56 @@ namespace KonsoleGameEngine
         /// <param name="startLocation"></param>
         /// <param name="destination"></param>
         /// <returns>A* Path</returns>
-        public List<Cell> CalculatePath(Cell startLocation, Cell destination)
+        public List<PathNode> CalculatePath(Cell startLocation, Cell destination)
         {
             // Reset Game World's pathfinding scores to default
             for (int i = 0; i < _game.X; i++)
             {
                 for (int j = 0; j < _game.Y; j++)
                 {
-                    Cell cell = _game.GetCell(i, j);
-                    cell.GScore = int.MaxValue;
-                    cell.CameFrom = null;
+                    _board[i, j] = new PathNode(_game.GetCell(i, j));
+                    _board[i, j].GScore = int.MaxValue;
+                    _board[i, j].CameFrom = null;
                 }
             }
 
             // Get starting Cell, add to open list and begin AStar search
-            Cell startCell = _game.GetCell(startLocation);
-            Cell destCell = _game.GetCell(destination);
-            startCell.GScore = 0;
-            startCell.HScore = CalulateMoveCost(startCell, destCell);
+            PathNode startNode = _board[startLocation.X, startLocation.Y];
+            PathNode destNode = _board[destination.X, destination.Y];
+            startNode.GScore = 0;
+            startNode.HScore = CalulateMoveCost(startNode, destNode);
 
-            openList = new List<Cell> { startCell };
-            closedList = new List<Cell>();
+            openListP = new List<PathNode> { startNode };
+            closedListP = new List<PathNode>();
 
-            while(openList.Count > 0)
+            while (openListP.Count > 0)
             {
-                Cell currentCell = GetLowestFCost(openList);
-                if(currentCell == destCell)
+                PathNode currentNode = GetLowestFCost(openListP);
+                if (currentNode == destNode)
                 {
                     // path found!
-                    return TracePath(destCell);
+                    return TracePath(destNode);
                 }
 
-                openList.Remove(currentCell);
-                closedList.Add(currentCell);
+                openListP.Remove(currentNode);
+                closedListP.Add(currentNode);
 
-                List<Cell> neighbours = FindNeighbours(currentCell);
-                foreach (Cell neighbour in neighbours)
+                List<PathNode> neighbours = FindNeighbours(currentNode);
+                foreach (PathNode neighbour in neighbours)
                 {
-                    if (closedList.Contains(neighbour))
+                    if (closedListP.Contains(neighbour))
                         continue;
 
-                    int tenGScore = currentCell.GScore + CalulateMoveCost(currentCell, neighbour);
+                    int tenGScore = currentNode.GScore + CalulateMoveCost(currentNode, neighbour);
                     if (tenGScore < neighbour.GScore)
                     {
-                        neighbour.CameFrom = currentCell;
+                        neighbour.CameFrom = currentNode;
                         neighbour.GScore = tenGScore;
-                        neighbour.HScore = CalulateMoveCost(neighbour, destCell);
+                        neighbour.HScore = CalulateMoveCost(neighbour, destNode);
 
-                        if (!openList.Contains(neighbour))
+                        if (!openListP.Contains(neighbour))
                         {
-                            openList.Add(neighbour);
+                            openListP.Add(neighbour);
                         }
                     }
                 }
@@ -93,12 +95,12 @@ namespace KonsoleGameEngine
         /// </summary>
         /// <param name="destCell"></param>
         /// <returns></returns>
-        private List<Cell> TracePath(Cell destCell)
+        private List<PathNode> TracePath(PathNode destNode)
         {
-            List<Cell> path = new List<Cell>();
-            path.Add(destCell);
-            Cell currentCell = destCell;
-            while(currentCell.CameFrom != null)
+            List<PathNode> path = new List<PathNode>();
+            path.Add(destNode);
+            PathNode currentCell = destNode;
+            while (currentCell.CameFrom != null)
             {
                 path.Add(currentCell.CameFrom);
                 currentCell = currentCell.CameFrom;
@@ -113,13 +115,13 @@ namespace KonsoleGameEngine
         /// </summary>
         /// <param name="cells"></param>
         /// <returns>Cell with lowest F score</returns>
-        private Cell GetLowestFCost(List<Cell> cells)
+        private PathNode GetLowestFCost(List<PathNode> nodes)
         {
-            Cell lowestFCell = cells[0];
-            foreach(Cell cell in cells)
+            PathNode lowestFCell = nodes[0];
+            foreach (PathNode node in nodes)
             {
-                if (cell.FScore < lowestFCell.FScore)
-                    lowestFCell = cell;
+                if (node.FScore < lowestFCell.FScore)
+                    lowestFCell = node;
             }
             return lowestFCell;
         }
@@ -130,7 +132,7 @@ namespace KonsoleGameEngine
         /// <param name="start"></param>
         /// <param name="dest"></param>
         /// <returns>Move heuristic</returns>
-        private int CalulateMoveCost(Cell start, Cell dest)
+        private int CalulateMoveCost(PathNode start, PathNode dest)
         {
             int xDist = Math.Abs(start.X - dest.X);
             int yDist = Math.Abs(start.Y - dest.Y);
@@ -143,12 +145,12 @@ namespace KonsoleGameEngine
         /// </summary>
         /// <param name="cell"></param>
         /// <returns>List of neighbours</returns>
-        private List<Cell> FindNeighbours (Cell cell)
+        private List<PathNode> FindNeighbours(PathNode node)
         {
-            List<Cell> neighbours = new List<Cell>();
+            List<PathNode> neighbours = new List<PathNode>();
 
-            int x = cell.X;
-            int y = cell.Y;
+            int x = node.X;
+            int y = node.Y;
 
             // Find neighours
             for (int i = -1; i <= 1; i++)
@@ -161,11 +163,11 @@ namespace KonsoleGameEngine
                         continue;
                     if (x + i == x && y + j == y)       // Same Cell
                         continue;
-                    if (_game.GetCell(x + i, y + j).IsWalkable == false)
+                    if (_board[x + i, y + j].IsWalkable == false)
                         continue;
 
                     // Add Cell to neighbour list
-                    neighbours.Add(_game.GetCell(x + i, y + j));
+                    neighbours.Add(_board[x + i, y + j]);
                 }
             }
 
