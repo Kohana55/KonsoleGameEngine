@@ -166,10 +166,8 @@ namespace KonsoleGameEngine
                     if (_board[x + i, y + j].IsWalkable == false)
                         continue;
                     if (fourNeighbours)
-                    {
                         if (!(_board[x + i, y + j].X == x || _board[x + i, y + j].Y == y))
                             continue;
-                    }
 
                     // Add Cell to neighbour list
                     neighbours.Add(_board[x + i, y + j]);
