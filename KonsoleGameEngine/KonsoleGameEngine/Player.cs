@@ -94,6 +94,8 @@ namespace MyGame
                 {
                     if (Model.X != 0)
                     {
+                        if (!_gameWorld.GetCell(Model.X - 1, Model.Y).IsWalkable)
+                            continue;
                         Model.X -= 1;
                     }
                 }
@@ -102,6 +104,8 @@ namespace MyGame
                 {
                     if (Model.X != _gameWorld.X - 1)
                     {
+                        if (!_gameWorld.GetCell(Model.X + 1, Model.Y).IsWalkable)
+                            continue;
                         Model.X += 1;
                     }
                 }
@@ -110,6 +114,8 @@ namespace MyGame
                 {
                     if (Model.Y != 0)
                     {
+                        if (!_gameWorld.GetCell(Model.X, Model.Y-1).IsWalkable)
+                            continue;
                         Model.Y -= 1;
                     }
                 }
@@ -118,6 +124,8 @@ namespace MyGame
                 {
                     if (Model.Y != _gameWorld.Y - 1)
                     {
+                        if (!_gameWorld.GetCell(Model.X, Model.Y+1).IsWalkable)
+                            continue;
                         Model.Y += 1;
                     }
                 }

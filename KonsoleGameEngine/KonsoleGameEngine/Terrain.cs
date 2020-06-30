@@ -1,4 +1,5 @@
 ﻿using KonsoleGameEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +11,7 @@ namespace MyGame
     class Terrain : GameEntity
     {
         // Array of Cells it controls
-        public Cell[] Model;
+        public List<Cell> Model;
 
         /// <summary>
         /// First override, return Cells as a list, standard
@@ -18,7 +19,7 @@ namespace MyGame
         /// <returns></returns>
         public override List<Cell> GetCells()
         {
-            return Model.OfType<Cell>().ToList();
+            return Model;
         }
 
         /// <summary>
@@ -29,18 +30,11 @@ namespace MyGame
         /// </summary>
         public override void Start()
         {
-            Model = new Cell[_gameWorld.X];
-            int i = 0;
-            foreach(Cell cell in Model)
+            Random rng = new Random();
+            Model = new List<Cell>();
+            for (int i = 0; i < 250; i++)
             {
-                if (i == 10 || i == 48)
-                {
-                    i++;
-                    continue;
-                }
-
-                Model[i] = new Cell(i, 5, "^") { IsWalkable = false };
-                i++;
+                Model.Add(new Cell(rng.Next(50), rng.Next(20), "█") { IsWalkable = false });
             }
         }
     }
