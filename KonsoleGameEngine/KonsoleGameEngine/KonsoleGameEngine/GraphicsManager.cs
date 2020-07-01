@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace KonsoleGameEngine
 {
@@ -15,6 +16,11 @@ namespace KonsoleGameEngine
         /// Scene buffer to be drawn
         /// </summary>
         private string gameScene;
+
+        /// <summary>
+        /// String builder to construct the scene buffer
+        /// </summary>
+        private StringBuilder gameSceneBuilder;
         #endregion
 
         #region Ctors
@@ -22,14 +28,15 @@ namespace KonsoleGameEngine
         /// Standard Ctor must accept a reference to GameWorld
         /// </summary>
         /// <param name="argGameWorld">GameWorld to be rendered</param>
-        public GraphicsManager(GameWorld argGameWorld)
+        public GraphicsManager(GameWorld argGameWorld, string title = "KonsoleGameEngine")
         {
-            Console.Title = "Space Invaders";
+            Console.Title = title;
             gameWorld = argGameWorld;
             Console.CursorVisible = false;
             Console.SetWindowSize(gameWorld.X + 2, gameWorld.Y + 1);
             Console.BufferWidth = gameWorld.X + 2;
             Console.BufferHeight = gameWorld.Y + 1;
+            gameSceneBuilder = new StringBuilder(gameWorld.X * gameWorld.Y + 1);
         }
         #endregion
 
@@ -39,16 +46,17 @@ namespace KonsoleGameEngine
         /// </summary>
         public void Update()
         {
-            gameScene = "";
+            gameSceneBuilder.Clear();
             for (int y = 0; y < gameWorld.Y; y++)
             {
                 for (int x = 0; x < gameWorld.X; x++)
                 {
-                    gameScene += gameWorld.GetCellContents(x, y);
+                    gameSceneBuilder.Append(gameWorld.GetCellContents(x, y));
                 }
 
-                gameScene += "\n";
+                gameSceneBuilder.Append("\n");
             }
+            gameScene = gameSceneBuilder.ToString();
         }
 
         /// <summary>

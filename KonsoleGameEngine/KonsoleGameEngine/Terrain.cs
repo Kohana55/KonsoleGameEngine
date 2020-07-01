@@ -32,9 +32,22 @@ namespace MyGame
         {
             Random rng = new Random();
             Model = new List<Cell>();
-            for (int i = 0; i < 250; i++)
+            double fillPercent = .2;
+
+            for(int x = 0; x < 50; x++)
             {
-                Model.Add(new Cell(rng.Next(50), rng.Next(20), "█") { IsWalkable = false });
+                for(int y = 0; y < 20; y++)
+                {
+                    if(x < 3 && y < 3) //keep walls out of the starting area
+                    {
+                        continue;
+                    }
+
+                    if(rng.NextDouble() <= fillPercent)
+                    {
+                        Model.Add(new Cell(x, y, "█") { IsWalkable = false });
+                    }
+                }
             }
         }
     }
