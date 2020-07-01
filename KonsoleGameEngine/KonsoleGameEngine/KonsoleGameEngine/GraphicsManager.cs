@@ -28,9 +28,9 @@ namespace KonsoleGameEngine
         /// Standard Ctor must accept a reference to GameWorld
         /// </summary>
         /// <param name="argGameWorld">GameWorld to be rendered</param>
-        public GraphicsManager(GameWorld argGameWorld)
+        public GraphicsManager(GameWorld argGameWorld, string title = "KonsoleGameEngine")
         {
-            Console.Title = "Space Invaders";
+            Console.Title = title;
             gameWorld = argGameWorld;
             Console.CursorVisible = false;
             Console.SetWindowSize(gameWorld.X + 2, gameWorld.Y + 1);
