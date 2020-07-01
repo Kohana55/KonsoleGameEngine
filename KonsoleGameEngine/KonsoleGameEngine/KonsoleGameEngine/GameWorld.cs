@@ -10,6 +10,11 @@ namespace KonsoleGameEngine
 
         private Cell[,] _board;
         private List<GameEntity> _entities = new List<GameEntity>();
+
+        /// <summary>
+        /// Lock for _board access
+        /// </summary>
+        private readonly object _boardLock = new object();
         #endregion
 
         #region Ctors
@@ -50,12 +55,15 @@ namespace KonsoleGameEngine
         /// </summary>
         public void Update()
         {
-            InitiateGameBoard();
-            foreach (GameEntity entity in _entities)
+            lock (_boardLock)
             {
-                foreach(Cell cell in entity.GetCells())
+                InitiateGameBoard();
+                foreach (GameEntity entity in _entities)
                 {
-                    _board[cell.X, cell.Y] = cell;
+                    foreach (Cell cell in entity.GetCells())
+                    {
+                        _board[cell.X, cell.Y] = cell;
+                    }
                 }
             }
         }
@@ -80,7 +88,12 @@ namespace KonsoleGameEngine
         /// <returns></returns>
         public string GetCellContents(int x, int y)
         {
-            return _board[x, y].Contents;
+            string contents;
+            lock (_boardLock)
+            {
+                contents = _board[x, y].Contents;
+            }
+            return contents;
         }
 
         /// <summary>
@@ -91,7 +104,12 @@ namespace KonsoleGameEngine
         /// <returns></returns>
         public Cell GetCell(int x, int y)
         {
-            return _board[x, y];
+            Cell cell;
+            lock (_boardLock)
+            {
+                cell = _board[x, y];
+            }
+            return cell;
         }
 
         /// <summary>
@@ -101,7 +119,12 @@ namespace KonsoleGameEngine
         /// <returns></returns>
         public Cell GetCell(Cell cell)
         {
-            return _board[cell.X, cell.Y];
+            Cell _cell;
+            lock (_boardLock)
+            {
+                _cell = _board[cell.X, cell.Y];
+            }
+            return _cell;
         }
         #endregion  // Cell Controls
         #endregion  // Public

@@ -54,6 +54,8 @@ namespace MyGame
         {
             Thread playerControllerThread = new Thread(Controller);
             playerControllerThread.Start();
+            Thread animationThread = new Thread(Animate);
+            animationThread.Start();
         }
 
         /// <summary>
@@ -129,11 +131,24 @@ namespace MyGame
                         Model.Y += 1;
                     }
                 }
+            }
+        }
 
-                if (keypress.KeyChar == ' ')
-                {
-                    _dog.CallDog(Model);
-                }
+        /// <summary>
+        /// Just for fun, run this in its own thread
+        /// kicked off when the Start() method is called just like
+        /// Update! 
+        /// </summary>
+        private void Animate()
+        {
+            while(true)
+            {
+                if (Model.Contents == "x")
+                    Model.Contents = "+";
+                else
+                    Model.Contents = "x";
+
+                Thread.Sleep(350);
             }
         }
     }

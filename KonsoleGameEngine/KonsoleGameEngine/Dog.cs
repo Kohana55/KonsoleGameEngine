@@ -13,7 +13,7 @@ namespace MyGame
         /// dog to exist.
         /// And an A* pathfinder along with a _path to hold our path
         /// </summary>
-        public Cell Model = new Cell(0, 0, "O");
+        public Cell Model = new Cell(0, 0, "O") { IsWalkable = false };
         private Player _player;
         private AStarPathfinder _pathFinder;
         private List<PathNode> _path = new List<PathNode>();
@@ -41,50 +41,9 @@ namespace MyGame
             _pathFinder = new AStarPathfinder(_gameWorld);
 
             Thread doggyUpdateThread = new Thread(Update);
-            doggyUpdateThread.Start();           
-        }
-
-        /// <summary>
-        /// Sets up a path when called
-        /// </summary>
-        /// <param name="dest"></param>
-        public void CallDog(Cell dest)
-        {
-            _path = _pathFinder.CalculatePath(Model, dest, true);
-        }
-
-        /// <summary>
-        /// The Player has a Controller thread, which seems like a fitting name.
-        /// This is essentially our Dogs 'Controller', Update seemed like a better name.
-        /// 
-        /// Notice this is kicked off during the Start(), right after we
-        /// setup our pathfinder
-        /// </summary>
-        private void Update()
-        {
-            while(true)
-            {
-                if (_path.Count>0)
-                    FollowPath();
-
-                Thread.Sleep(100);
-            }
-        }
-
-        /// <summary>
-        /// Moves the Dog's Model to the next Cell on its path
-        /// 
-        /// The path is ordered, so we're using the first element of 
-        /// the path, then deleting it. 
-        /// 
-        /// It would be better practice to check if the _path is empty here
-        /// rather than in the Update function. But this is YOUR code, you fix it! :)
-        /// </summary>
-        private void FollowPath()
-        {
-            Model.X = _path[0].X;
-            Model.Y = _path[0].Y;
-            _path.RemoveAt(0);
+            doggyUpdateThread.Start();
+            Thread animationThread = new Thread(Animate);
+            animationThread.Start();
         }
 
         /// <summary>
@@ -99,6 +58,77 @@ namespace MyGame
             _player = player;
             Model.X = _player.Model.X + 1;
             Model.Y = _player.Model.Y;
+        }
+
+        /// <summary>
+        /// Sets up a path when called
+        /// </summary>
+        /// <param name="dest"></param>
+        private void FindPlayer(Cell dest)
+        {
+            if (Model == dest)
+                return;
+            _path = _pathFinder.CalculatePath(Model, dest, true);
+            if (_path.Count > 2)
+            {
+                _path.RemoveAt(0);
+                _path.RemoveAt(_path.Count - 1);
+            }
+        }
+
+        /// <summary>
+        /// The Player has a Controller thread, which seems like a fitting name.
+        /// This is essentially our Dogs 'Controller', Update seemed like a better name.
+        /// 
+        /// Notice this is kicked off during the Start(), right after we
+        /// setup our pathfinder
+        /// </summary>
+        private void Update()
+        {
+            while(true)
+            {
+                if (_path.Count>0)
+                    FollowPlayer();
+
+                
+                FindPlayer(_player.Model);
+
+                Thread.Sleep(400);
+            }
+        }
+
+        /// <summary>
+        /// Moves the Dog's Model to the next Cell on its path
+        /// 
+        /// The path is ordered, so we're using the first element of 
+        /// the path, then deleting it. 
+        /// 
+        /// It would be better practice to check if the _path is empty here
+        /// rather than in the Update function. But this is YOUR code, you fix it! :)
+        /// </summary>
+        private void FollowPlayer()
+        {
+            Model.X = _path[0].X;
+            Model.Y = _path[0].Y;
+            _path.RemoveAt(0);
+        }
+
+        /// <summary>
+        /// Just for fun, run this in its own thread
+        /// kicked off when the Start() method is called just like
+        /// Update! 
+        /// </summary>
+        private void Animate()
+        {
+            while (true)
+            {
+                if (Model.Contents == "O")
+                    Model.Contents = "o";
+                else
+                    Model.Contents = "O";
+
+                Thread.Sleep(350);
+            }
         }
     }
 }
