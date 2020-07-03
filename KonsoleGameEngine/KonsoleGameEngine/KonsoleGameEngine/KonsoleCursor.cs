@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 
 namespace KonsoleGameEngine
 {
-    class Cursor : GameEntity
+    class KonsoleCursor : GameEntity
     {
 
         /// <summary>
         /// Cursor Model
         /// </summary>
-        public  Cell Model = new Cell(0, 0, "x");
+        public Cell Model = new Cell(0, 0, "x");
+
+        public int X { get { return Model.X; } }
+        public int Y { get { return Model.Y; } }
 
         /// <summary>
         /// Returns Cursor Cell
@@ -38,7 +41,7 @@ namespace KonsoleGameEngine
         /// WASD    - movement
         /// SPACE   - select
         /// </summary>
-        private void Controller()
+        protected virtual void Controller()
         {
             ConsoleKeyInfo keypress;
             Cell currentCell;

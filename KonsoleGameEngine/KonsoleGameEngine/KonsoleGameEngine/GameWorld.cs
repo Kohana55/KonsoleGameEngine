@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KonsoleGameEngine
 {
@@ -10,11 +11,14 @@ namespace KonsoleGameEngine
 
         private Cell[,] _board;
         private List<GameEntity> _entities = new List<GameEntity>();
+        private KonsoleUI _ui;
+        private KonsoleCursor _cursor;
 
         /// <summary>
         /// Lock for _board access
         /// </summary>
         private readonly object _boardLock = new object();
+        private readonly object _entitiesLock = new object();
         #endregion
 
         #region Ctors
@@ -44,10 +48,16 @@ namespace KonsoleGameEngine
         /// </summary>
         public void Start()
         {
-            foreach(GameEntity entity in _entities)
+            lock (_entitiesLock)
             {
-                entity.Start();
+                foreach (GameEntity entity in _entities)
+                {
+                    entity.Start();
+                }
             }
+
+            if (_cursor != null)
+                _cursor.Start();
         }
 
         /// <summary>
@@ -57,14 +67,23 @@ namespace KonsoleGameEngine
         {
             lock (_boardLock)
             {
-                InitiateGameBoard();
-                foreach (GameEntity entity in _entities)
+                lock (_entitiesLock)
                 {
-                    foreach (Cell cell in entity.GetCells())
+                    InitiateGameBoard();
+                    foreach (GameEntity entity in _entities)
                     {
-                        _board[cell.X, cell.Y] = cell;
+                        foreach (Cell cell in entity.GetCells())
+                        {
+                            _board[cell.X, cell.Y] = cell;
+                        }
                     }
                 }
+
+                if (_cursor != null)
+                    _board[_cursor.X, _cursor.Y] = _cursor.Model;
+
+                if (_ui != null)
+                    _ui.Update();
             }
         }
 
@@ -74,8 +93,82 @@ namespace KonsoleGameEngine
         /// <param name="entity"></param>
         public void RegisterEntity(GameEntity entity)
         {
-            entity._gameWorld = this;
-            _entities.Add(entity);
+            lock (_entitiesLock)
+            {
+                entity._gameWorld = this;
+                _entities.Add(entity);
+            }
+        }
+
+        public void RegisterAndStartEntity(GameEntity entity)
+        {
+            lock (_entitiesLock)
+            {
+                entity._gameWorld = this;
+                _entities.Add(entity);
+                entity.Start();
+            }
+        }
+
+        /// <summary>
+        /// Get GameEntity assigned to Cell
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        public GameEntity GetEntity(Cell cell)
+        {
+            foreach(GameEntity entity in _entities)
+            {
+                foreach(Cell _cell in entity.GetCells())
+                {
+                    if (_cell.X == cell.X && _cell.Y == cell.Y)
+                        return entity;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Register a Konsole Cursor with the GameWorld
+        /// </summary>
+        /// <param name="cursor"></param>
+        public void RegisterCursor(KonsoleCursor cursor)
+        {           
+            _cursor = cursor;
+            _cursor._gameWorld = this;
+        }
+
+        /// <summary>
+        /// Register a KonsoleUI with the GameWorld
+        /// </summary>
+        /// <param name="ui"></param>
+        public void RegisterUI(KonsoleUI ui)
+        {
+            _ui = ui;
+            _ui.RegisterGameWorld(this);
+        }
+
+        /// <summary>
+        /// Returns the UI buffer
+        /// </summary>
+        /// <returns></returns>
+        public string GetUIBuffer()
+        {
+            if (_ui != null)
+                return _ui.GetUI();
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the KonsoleUI element to the GameWorld
+        /// </summary>
+        /// <returns></returns>
+        public KonsoleUI GetUI()
+        {
+            if (_ui != null)
+                return _ui;
+            return null;
         }
 
         #region CellControls

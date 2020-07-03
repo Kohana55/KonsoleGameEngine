@@ -33,9 +33,9 @@ namespace KonsoleGameEngine
             Console.Title = title;
             gameWorld = argGameWorld;
             Console.CursorVisible = false;
-            Console.SetWindowSize(gameWorld.X + 2, gameWorld.Y + 1);
+            Console.SetWindowSize(gameWorld.X + 2, gameWorld.Y + 5);
             Console.BufferWidth = gameWorld.X + 2;
-            Console.BufferHeight = gameWorld.Y + 1;
+            Console.BufferHeight = gameWorld.Y + 5;
             gameSceneBuilder = new StringBuilder(gameWorld.X * gameWorld.Y + 1);
         }
         #endregion
@@ -49,6 +49,7 @@ namespace KonsoleGameEngine
             gameSceneBuilder.Clear();
             for (int y = 0; y < gameWorld.Y; y++)
             {
+                // Draw World
                 for (int x = 0; x < gameWorld.X; x++)
                 {
                     gameSceneBuilder.Append(gameWorld.GetCellContents(x, y));
@@ -56,6 +57,10 @@ namespace KonsoleGameEngine
 
                 gameSceneBuilder.Append("\n");
             }
+
+            // Draw UI
+            gameSceneBuilder.Append(gameWorld.GetUIBuffer());
+
             gameScene = gameSceneBuilder.ToString();
         }
 

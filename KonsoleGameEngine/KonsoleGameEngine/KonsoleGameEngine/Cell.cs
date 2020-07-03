@@ -24,6 +24,12 @@ namespace KonsoleGameEngine
 
         #region Ctors
         /// <summary>
+        /// Standard Ctor
+        /// Allows others to derive from this class
+        /// </summary>
+        public Cell(){}
+
+        /// <summary>
         /// Ctor for Cell
         /// </summary>
         /// <param name="x"></param>

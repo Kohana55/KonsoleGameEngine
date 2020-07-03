@@ -46,10 +46,12 @@
     <Compile Include="Dog.cs" />
     <Compile Include="KonsoleGameEngine\AStarPathfinder.cs" />
     <Compile Include="KonsoleGameEngine\Cell.cs" />
-    <Compile Include="KonsoleGameEngine\Cursor.cs" />
     <Compile Include="KonsoleGameEngine\GameEntity.cs" />
     <Compile Include="KonsoleGameEngine\GameWorld.cs" />
     <Compile Include="KonsoleGameEngine\GraphicsManager.cs" />
+    <Compile Include="KonsoleGameEngine\KonsoleCursor.cs" />
+    <Compile Include="KonsoleGameEngine\KonsoleTerrain.cs" />
+    <Compile Include="KonsoleGameEngine\KonsoleUI.cs" />
     <Compile Include="KonsoleGameEngine\PathNode.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
