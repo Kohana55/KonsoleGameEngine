@@ -55,7 +55,7 @@ namespace KonsoleGameEngine
                     gameSceneBuilder.Append(gameWorld.GetCellContents(x, y));
                 }
 
-                gameSceneBuilder.Append("\n");
+                gameSceneBuilder.Append(Environment.NewLine);
             }
 
             // Draw UI
